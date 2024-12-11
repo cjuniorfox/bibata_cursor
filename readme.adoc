@@ -81,6 +81,15 @@ enjoy a customized bibata cursor theme tailored to your preferences.
 
 More docs can be find on https://github.com/ful1e5/Bibata_Cursor[upstream].
 
+== Fedora COPR
+
+This theme is available thought cjuniorfox's copr project [hyprland-shell](https://copr.fedorainfracloud.org/coprs/cjuniorfox/hyprland-shell)
+
+```bash
+dnf copr enable cjuniorfox/hyprland-shell 
+dnf update
+dnf install bibata-cursor-theme
+```
 
 == License
 
