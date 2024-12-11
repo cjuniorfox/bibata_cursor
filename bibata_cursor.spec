@@ -21,6 +21,7 @@ Requires:       python3
 Bibata Cursor Theme is a modern, sleek cursor theme. This package builds the cursor theme for X11 and Hyprland environments.
 
 %prep
+setup -q 
 
 %build
 python3 cursor_utils.py --hypr --x11 --out-dir ./out
