@@ -5,6 +5,7 @@ Summary:        Bibata Cursor Theme for X11 and Hyprland
 
 License:        GPLv3 
 URL:            https://github.com/rtgiskard/bibata_cursor
+Source0:        %{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  librsvg2-tools
