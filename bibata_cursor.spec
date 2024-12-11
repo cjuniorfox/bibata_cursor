@@ -1,5 +1,5 @@
 Name:           bibata-cursor-theme
-Version:        0.0.1
+Version:        0.0.2
 Release:        1%{?dist}
 Summary:        Bibata Cursor Theme for X11 and Hyprland
 
@@ -35,6 +35,9 @@ cp -r ./out/Bibata-* %{buildroot}/usr/share/icons/
 /usr/share/icons/Bibata-*
 
 %changelog
+* Wed Dec 11 2024 Junior <cjuniorfox@gmail.com> 0.0.2-1
+- new package built with tito
+
 * Wed Dec 11 2024 Carlos Junior <cjuniorfox@gmail.com> - 0.0.1
 - RPM Build for the project
 
