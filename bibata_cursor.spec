@@ -1,4 +1,4 @@
-Name:           bibata-cursor
+Name:           bibata-cursor-theme
 Version:        0.0.1
 Release:        1%{?dist}
 Summary:        Bibata Cursor Theme for X11 and Hyprland
