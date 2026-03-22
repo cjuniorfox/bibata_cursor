@@ -357,7 +357,7 @@ class CursorBuilder:
             spec = self.theme[name]
 
             if not Path(spec['dir']).exists():
-                Utils.run('cd svg && ./link.py', wait=True)
+                Utils.run([sys.executable, 'link.py'], wait=True, cwd='svg')
 
             yield CursorRender(name, spec['desc'], spec['dir'], spec['colors'])
 
