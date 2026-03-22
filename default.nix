@@ -16,7 +16,7 @@ stdenvNoCC.mkDerivation rec {
 
   buildPhase = ''
     runHook preBuild
-    python3 cursor_utils.py --hypr --x11 --out-dir out
+    python3 src/cursor_utils.py --hypr --x11 --out-dir out
     runHook postBuild
   '';
 

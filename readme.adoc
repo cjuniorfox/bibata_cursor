@@ -93,65 +93,91 @@ dnf install bibata-cursor-theme
 
 == Nix / NixOS
 
-This repository now includes a Nix package definition. The cursor themes are generated at build time and installed into `share/icons`, so the package can be installed directly through Nix.
+This repository ships a `flake.nix` and `default.nix`. The cursor themes are
+generated at build time and installed into `share/icons`, so no generator tool
+is needed at runtime.
 
-=== Install from a local checkout
+=== Prerequisites: enable Nix flakes
+
+If your system does not yet have flakes enabled, add the following to your
+NixOS configuration and rebuild once:
 
 ```nix
-{ pkgs, ... }:
+nix.settings.experimental-features = [ "nix-command" "flakes" ];
+```
+
+Or pass the flag ad-hoc to any `nix` command:
+
+```bash
+nix --extra-experimental-features "nix-command flakes" <command>
+```
+
+=== Test the build locally
+
+Clone the repo, check out the `nix` branch, and run:
+
+```bash
+nix build github:cjuniorfox/bibata_cursor/nix#default --print-build-logs
+
+# Inspect what was generated:
+find result/share/icons -maxdepth 1 -type d -name "Bibata-*"
+```
+
+=== Add to an existing NixOS flake
+
+In your system `flake.nix`, add `bibata-cursor` as an input and wire it into
+your host configuration.
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    bibata-cursor.url = "github:cjuniorfox/bibata_cursor/nix";  # <1>
+  };
+
+  outputs = inputs@{ nixpkgs, bibata-cursor, ... }: {
+    nixosConfigurations.host = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };                        # <2>
+      modules = [
+        ./hosts/host/configuration.nix
+      ];
+    };
+  };
+}
+```
+<1> Replace `host` with your machine name.
+<2> `specialArgs` forwards `inputs` into every module so the package is
+accessible from `configuration.nix`.
+
+Then in `configuration.nix` (or any imported module):
+
+```nix
+{ pkgs, inputs, ... }:
 
 {
-	environment.systemPackages = [
-		(pkgs.callPackage /path/to/bibata_cursor/default.nix {})
-	];
+  environment.systemPackages = [
+    inputs.bibata-cursor.packages.${pkgs.system}.default
+  ];
 }
 ```
 
-=== Install directly from Git
+Alternatively, add an inline module without touching `configuration.nix`:
 
 ```nix
-{ pkgs, ... }:
-
-let
-	bibata-cursor = pkgs.callPackage (builtins.fetchGit {
-		url = "https://github.com/rtgiskard/bibata_cursor.git";
-	}) {};
-in {
-	environment.systemPackages = [
-		bibata-cursor
-	];
-}
+modules = [
+  ./hosts/host/configuration.nix
+  ({ pkgs, ... }: {
+    environment.systemPackages = [
+      bibata-cursor.packages.${pkgs.system}.default
+    ];
+  })
+];
 ```
 
-=== Install as a flake input
-
-```nix
-{
-	inputs = {
-		nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-		bibata-cursor.url = "github:rtgiskard/bibata_cursor";
-	};
-
-	outputs = { self, nixpkgs, bibata-cursor, ... }:
-		let
-			system = "x86_64-linux";
-			pkgs = import nixpkgs { inherit system; };
-		in {
-			nixosConfigurations.host = nixpkgs.lib.nixosSystem {
-				inherit system;
-				modules = [
-					({ ... }: {
-						environment.systemPackages = [
-							bibata-cursor.packages.${system}.default
-						];
-					})
-				];
-			};
-		};
-}
-```
-
-After installation, the generated themes are available under `/run/current-system/sw/share/icons` on NixOS and can be selected by name, for example `Bibata-Modern-Classic`.
+After rebuilding with `sudo nixos-rebuild switch --flake .#host`, the themes
+are available under `/run/current-system/sw/share/icons` and can be selected
+by name, for example `Bibata-Modern-Classic`.
 
 == License
 
