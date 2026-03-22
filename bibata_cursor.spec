@@ -24,7 +24,7 @@ Bibata Cursor Theme is a modern, sleek cursor theme. This package builds the cur
 %setup -q 
 
 %build
-python3 cursor_utils.py --hypr --x11 --out-dir ./out
+python3 src/cursor_utils.py --hypr --x11 --out-dir ./out
 
 %install
 mkdir -p %{buildroot}/usr/share/icons
