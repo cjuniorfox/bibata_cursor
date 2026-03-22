@@ -91,6 +91,68 @@ dnf update
 dnf install bibata-cursor-theme
 ```
 
+== Nix / NixOS
+
+This repository now includes a Nix package definition. The cursor themes are generated at build time and installed into `share/icons`, so the package can be installed directly through Nix.
+
+=== Install from a local checkout
+
+```nix
+{ pkgs, ... }:
+
+{
+	environment.systemPackages = [
+		(pkgs.callPackage /path/to/bibata_cursor/default.nix {})
+	];
+}
+```
+
+=== Install directly from Git
+
+```nix
+{ pkgs, ... }:
+
+let
+	bibata-cursor = pkgs.callPackage (builtins.fetchGit {
+		url = "https://github.com/rtgiskard/bibata_cursor.git";
+	}) {};
+in {
+	environment.systemPackages = [
+		bibata-cursor
+	];
+}
+```
+
+=== Install as a flake input
+
+```nix
+{
+	inputs = {
+		nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+		bibata-cursor.url = "github:rtgiskard/bibata_cursor";
+	};
+
+	outputs = { self, nixpkgs, bibata-cursor, ... }:
+		let
+			system = "x86_64-linux";
+			pkgs = import nixpkgs { inherit system; };
+		in {
+			nixosConfigurations.host = nixpkgs.lib.nixosSystem {
+				inherit system;
+				modules = [
+					({ ... }: {
+						environment.systemPackages = [
+							bibata-cursor.packages.${system}.default
+						];
+					})
+				];
+			};
+		};
+}
+```
+
+After installation, the generated themes are available under `/run/current-system/sw/share/icons` on NixOS and can be selected by name, for example `Bibata-Modern-Classic`.
+
 == License
 
 This project is licensed under the terms of the https://www.gnu.org/licenses/gpl-3.0.html[GPLv3] or any later version.
